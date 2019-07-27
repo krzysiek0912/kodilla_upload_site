@@ -5,11 +5,11 @@ exports.upload = function(request, response) {
   console.log("Rozpoczynam obsługę żądania upload.");
   var form = new formidable.IncomingForm();
   form.parse(request, function(error, fields, files) {
-    // fs.renameSync(files.upload.path, encodeURI(files.upload.name));
-    fs.renameSync(files.upload.path, "./show/test.png");
+    let path = encodeURI("img/" + files.upload.name);
+    fs.renameSync(files.upload.path, encodeURI("./img/" + files.upload.name));
     response.writeHead(200, { "Content-Type": "text/html" });
     response.write("received image:<br/>");
-    response.write("<img src='/show' />");
+    response.write("<img src='" + path + "' />");
     response.end();
   });
 };
@@ -23,10 +23,15 @@ exports.welcome = function(request, response) {
   });
 };
 
-exports.show = function(request, response) {
-  fs.readFile("./show/test.png", "binary", function(error, file) {
-    response.writeHead(200, { "Content-Type": "image/png" });
-    response.write(file, "binary");
+exports.show = function(request, response, url) {
+  fs.readFile("." + url, "binary", function(error, file) {
+    if (!error) {
+      response.writeHead(200, { "Content-Type": "image/png" });
+      response.write(file, "binary");
+    } else {
+      response.writeHead(200, { "Content-Type": "image/png" });
+      response.write("./img/test.png", "binary");
+    }
     response.end();
   });
 };
